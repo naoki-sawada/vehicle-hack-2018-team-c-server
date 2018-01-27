@@ -1,3 +1,4 @@
+const EventEmitter = require('events');
 const { VISClient } = require('./vias_h2018');
 
 // === Vehicle Data Path
@@ -69,115 +70,122 @@ const viscOption = {
 
 // == Subscribe sample ==
 //var vias = new VISClient( viscOption );
-var vias = undefined;
-var bConnected = false;
-
-//vias.connect(() => {
-function connectCb() {
-  bConnected = true;
-  console.log("Connected");
-
-  // === subscribe ===
-  // == Vehicle
-  subscribe_ID("VEHICLE_SPEED");
-
-  subscribe_ID("GPS_LATITUDE");
-  subscribe_ID("GPS_LONGITUDE");
-  subscribe_ID("GPS_ALTITUDE");
-  subscribe_ID("GPS_HEADING");
-  subscribe_ID("GPS_SPEED");
-  subscribe_ID("ENGINE_SPEED");
-  subscribe_ID("STEER_ANGLE");
-  subscribe_ID("ACCEL_PEDAL");
-  subscribe_ID("BRAKE_PEDAL");
-  subscribe_ID("PARKINGBRAKE");
-  subscribe_ID("ACCEL_X");
-  subscribe_ID("ACCEL_Y");
-  subscribe_ID("ACCEL_Z");
-
-  subscribe_ID("GYRO_X");
-  subscribe_ID("GYRO_Y");
-  subscribe_ID("GYRO_Z");
-
-  subscribe_ID("GEAR");
-  subscribe_ID("FUEL_LEVEL");
-  subscribe_ID("FUEL_COMSUM");
-//  subscribe_ID("POWER_MODE");
-  subscribe_ID("DISTANCE_TOTAL");
-  subscribe_ID("DOOR_FR");
-  subscribe_ID("DOOR_FL");
-  subscribe_ID("BELT_FR");
-
-  subscribe_ID("LIGHT_LOWBEAM");
-  subscribe_ID("LIGHT_HIGHBEAM");
-  subscribe_ID("LIGHT_BRAKE");
-  subscribe_ID("LIGHT_PARKING");
-
-  // == Sensor
-  subscribe_ID("DRV_AWAKENESS");
-  subscribe_ID("DRV_ATTENTIVENESS");
-  subscribe_ID("PAS_AWAKENESS");
-  subscribe_ID("PAS_ATTENTIVENESS");
-  subscribe_ID("BCK_AWAKENESS");
-  subscribe_ID("BCK_ATTENTIVENESS");
-
-  subscribe_ID("HEARTRATE");
-  subscribe_ID("CONCENTRATION");
-  subscribe_ID("IP_ALTITUDE");
-  subscribe_ID("IP_ATOMPRESSURE");
-
-  subscribe_ID("MESH_TEMPERATURE");
-  subscribe_ID("MESH_HUMIDITY");
-  subscribe_ID("MESH_TRUNK");
-
-  subscribe_ID("BOCCO_AIRCON");
-  subscribe_ID("BOCCO_WINDOW");
-
-}
-function connectErrCb() {
-  bConnected = false;
-}
-function disconnectCb() {
-  console.log("successfully disconnected");
-  vias = undefined;
-  bConnected = false;
-}
-function disconnectErrCb() {
-  console.log("Disconnect error");
-  bConnected = false;
-}
-// === connect
-function doConnect() {
-  if (vias !== undefined || bConnected) {
-    console.log("WebSocket already connected");
-    return;
+class ViasClass extends EventEmitter {
+  constructor() {
+    super();
+    this.vias = undefined;
+    this.bConnected = false;
+    this.connectCb = this.connectCb.bind(this);
+    this.connectErrCb = this.connectErrCb.bind(this);
+    this.disconnectCb = this.disconnectCb.bind(this);
+    this.disconnectErrCb = this.disconnectErrCb.bind(this);
   }
-  // viscOption.roomId = document.getElementById('roomid').value;
-  vias = new VISClient( viscOption );
-  console.log("Try to connect to VISServer");
-  vias.connect(connectCb,connectErrCb);
-}
 
-// === disconnect
-function doDisconnect() {
-   if (vias === undefined || !bConnected) {
-    console.log("WebSocket not connected");
-    return;
+  connectCb() {
+    this.bConnected = true;
+    console.log("Connected");
+
+    // === subscribe ===
+    // == Vehicle
+    this.subscribe_ID("VEHICLE_SPEED");
+
+    this.subscribe_ID("GPS_LATITUDE");
+    this.subscribe_ID("GPS_LONGITUDE");
+    this.subscribe_ID("GPS_ALTITUDE");
+    this.subscribe_ID("GPS_HEADING");
+    this.subscribe_ID("GPS_SPEED");
+    this.subscribe_ID("ENGINE_SPEED");
+    this.subscribe_ID("STEER_ANGLE");
+    this.subscribe_ID("ACCEL_PEDAL");
+    this.subscribe_ID("BRAKE_PEDAL");
+    this.subscribe_ID("PARKINGBRAKE");
+    this.subscribe_ID("ACCEL_X");
+    this.subscribe_ID("ACCEL_Y");
+    this.subscribe_ID("ACCEL_Z");
+
+    this.subscribe_ID("GYRO_X");
+    this.subscribe_ID("GYRO_Y");
+    this.subscribe_ID("GYRO_Z");
+
+    this.subscribe_ID("GEAR");
+    this.subscribe_ID("FUEL_LEVEL");
+    this.subscribe_ID("FUEL_COMSUM");
+  //  this.subscribe_ID("POWER_MODE");
+    this.subscribe_ID("DISTANCE_TOTAL");
+    this.subscribe_ID("DOOR_FR");
+    this.subscribe_ID("DOOR_FL");
+    this.subscribe_ID("BELT_FR");
+
+    this.subscribe_ID("LIGHT_LOWBEAM");
+    this.subscribe_ID("LIGHT_HIGHBEAM");
+    this.subscribe_ID("LIGHT_BRAKE");
+    this.subscribe_ID("LIGHT_PARKING");
+
+    // == Sensor
+    this.subscribe_ID("DRV_AWAKENESS");
+    this.subscribe_ID("DRV_ATTENTIVENESS");
+    this.subscribe_ID("PAS_AWAKENESS");
+    this.subscribe_ID("PAS_ATTENTIVENESS");
+    this.subscribe_ID("BCK_AWAKENESS");
+    this.subscribe_ID("BCK_ATTENTIVENESS");
+
+    this.subscribe_ID("HEARTRATE");
+    this.subscribe_ID("CONCENTRATION");
+    this.subscribe_ID("IP_ALTITUDE");
+    this.subscribe_ID("IP_ATOMPRESSURE");
+
+    this.subscribe_ID("MESH_TEMPERATURE");
+    this.subscribe_ID("MESH_HUMIDITY");
+    this.subscribe_ID("MESH_TRUNK");
+
+    this.subscribe_ID("BOCCO_AIRCON");
+    this.subscribe_ID("BOCCO_WINDOW");
+
   }
-  vias.disconnect(disconnectCb, disconnectErrCb);
+  connectErrCb() {
+    this.bConnected = false;
+  }
+  disconnectCb() {
+    console.log("successfully disconnected");
+    this.vias = undefined;
+    this.bConnected = false;
+  }
+  disconnectErrCb() {
+    console.log("Disconnect error");
+    this.bConnected = false;
+  }
+  // === connect
+  doConnect() {
+    if (this.vias !== undefined || this.bConnected) {
+      console.log("WebSocket already connected");
+      return;
+    }
+    // viscOption.roomId = document.getElementById('roomid').value;
+    this.vias = new VISClient( viscOption );
+    console.log("Try to connect to VISServer");
+    this.vias.connect(this.connectCb, this.connectErrCb);
+  }
+
+  // === disconnect
+  doDisconnect() {
+    if (this.vias === undefined || !this.bConnected) {
+      console.log("WebSocket not connected");
+      return;
+    }
+    this.vias.disconnect(this.disconnectCb, this.disconnectErrCb);
+  }
+
+  // === Subscribe
+  subscribe_ID(_strID) {
+    //dispValById(_strID, '');
+    let varID = eval(_strID)
+    this.vias.subscribe(varID, (_val) => {
+      // dispValById(_strID, _val);
+      // console.log(_strID, _val);
+      
+      this.emit('message', { type: _strID, val: _val });
+    });
+  }
 }
 
-// === Subscribe
-function subscribe_ID(_strID) {
-  //dispValById(_strID, '');
-  let varID = eval(_strID)
-  vias.subscribe(varID, (_val) => {
-    // dispValById(_strID, _val);
-    console.log(_strID, _val);
-  });
-}
-
-module.exports = {
-  doConnect,
-  doDisconnect,
-};
+module.exports = ViasClass;

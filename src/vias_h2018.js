@@ -36,19 +36,19 @@ var ReqDict = (function() {
   // == public method ==
   p.addRequest = function(_reqId, _obj) {
 
-    dbgLog("addRequest: reqId="+ _reqId);
+    console.error("addRequest: reqId="+ _reqId);
     if (mainDict[_reqId] != undefined) {
       // this.dgbLog("--:Error: requestId already used. reqId="+ _reqId);
       console.error("--:Error: requestId already used. reqId="+ _reqId);
       return false;
     }
     mainDict[_reqId] = _obj;
-    dbgLog("--:EntryNum=" + Object.keys(mainDict).length);
+    console.error("--:EntryNum=" + Object.keys(mainDict).length);
     return true;
   };
   p.deleteRequest = function(_reqId) {
 
-    dbgLog("deleteRequest: reqId="+_reqId);
+    console.error("deleteRequest: reqId="+_reqId);
     if (mainDict[_reqId] == undefined)
       return false;
     // delete entry from mainDict
@@ -63,7 +63,7 @@ var ReqDict = (function() {
     if (cliSubId != undefined && cliSubIdDict[cliSubId] != undefined)
       delete cliSubIdDict[cliSubId];
 
-    dbgLog("--:entry deleted. reqId="+_reqId+" ,cliSubId="+cliSubId+" ,svrSubId="+svrSubId);
+    console.error("--:entry deleted. reqId="+_reqId+" ,cliSubId="+cliSubId+" ,svrSubId="+svrSubId);
     return true;
   };
   p.getRequestByReqId = function(_reqId) {
@@ -76,16 +76,16 @@ var ReqDict = (function() {
     return this.getRequestByReqId(reqId);
   };
   p.addCliSubId = function(_reqId, _cliSubId) {
-    dbgLog("addCliSubId: reqId="+_reqId+" cliSubId="+_cliSubId);
+    console.error("addCliSubId: reqId="+_reqId+" cliSubId="+_cliSubId);
     // this func is only for 'subscribe' request.
     // should not be used for 'unsubscribe' request, otherwise
     // a subscriptionId may be used twice in hash array.
     if (mainDict[_reqId] == undefined) {
-      dbgLog("--:Error: this requestId entry not exits. reqId="+_reqId);
+      console.error("--:Error: this requestId entry not exits. reqId="+_reqId);
       return false;
     }
     if (cliSubIdDict[_cliSubId] != undefined) {
-      dbgLog("--:Error: this subscriptionId already used. subId="+_svrSubId);
+      console.error("--:Error: this subscriptionId already used. subId="+_svrSubId);
       return false;
     }
     cliSubIdDict[_cliSubId] = _reqId; // for cross reference.
@@ -93,16 +93,16 @@ var ReqDict = (function() {
   };
   p.addSvrSubId = function(_reqId, _svrSubId) {
 
-    dbgLog("addSvrSubId: reqId="+_reqId+" svrSubId="+_svrSubId);
+    console.error("addSvrSubId: reqId="+_reqId+" svrSubId="+_svrSubId);
     // this func is only for 'subscribe' request.
     // should not be used for 'unsubscribe' request, otherwise
     // a subscriptionId may be used twice in hash array.
     if (mainDict[_reqId] == undefined) {
-      dbgLog("--:Error: this requestId entry not exits. reqId="+_reqId);
+      console.error("--:Error: this requestId entry not exits. reqId="+_reqId);
       return false;
     }
     if (svrSubIdDict[_svrSubId] != undefined) {
-      dbgLog("--:Error: this subscriptionId already used. subId="+_svrSubId);
+      console.error("--:Error: this subscriptionId already used. subId="+_svrSubId);
       return false;
     }
     mainDict[_reqId].svrSubId = _svrSubId;
@@ -155,7 +155,7 @@ var ReqDict = (function() {
   };
 
   // == private method
-  function dbgLog(_msg) {
+  function console.error(_msg) {
     //console.log("[VIAS:ReqDict]:"+_msg);
   }
 
@@ -208,14 +208,14 @@ var VISClient = (function() {
   var p = visClient.prototype;
 
   p.connect = function(_sucCb, _errCb) {
-    dbgLog("enter connect");
+    console.error("enter connect");
     if (_sucCb == undefined)
       return p.pconnect.call(this);
     else
       return p.cconnect.call(this, _sucCb, _errCb); //need to replace 'this'
   };
   p.cconnect = function(_sucCb, _errCb) {
-    dbgLog("enter cconnect");
+    console.error("enter cconnect");
     // TODO: connect の失敗ケースはどんな場合？
     if (connection != null) {
       //既にconnectionがあるので、エラーを返す
@@ -247,7 +247,7 @@ var VISClient = (function() {
 
   };
   p.pconnect = function() {
-    dbgLog("enter pconnect");
+    console.error("enter pconnect");
     var thiz = this;
     return new Promise(function(_res, _rej) {
       p.cconnect.call(thiz, _res, _rej);  // need to replace this
@@ -255,7 +255,7 @@ var VISClient = (function() {
   };
 
   p.disconnect = function(_sucCb, _errCb) {
-    dbgLog("enter disconnect");
+    console.error("enter disconnect");
     if (_sucCb == undefined)
       return p.pdisconnect();
     else
@@ -271,22 +271,22 @@ var VISClient = (function() {
     connection.close();
   };
   p.pdisconnect = function() {
-    dbgLog("enter pdisconnect");
+    console.error("enter pdisconnect");
     return new Promise(function(_res, _rej) {
       p.cdisconnect(_res, _rej);
     });
   };
 
   p.get = function(_path, _sucCb, _errCb) {
-    dbgLog("enter get");
+    console.error("enter get");
     if (_sucCb == undefined)
       return p.pget(_path);
     else
       return p.cget(_path, _sucCb, _errCb);
   };
   p.cget = function(_path, _sucCb, _errCb) {
-    dbgLog("enter cget");
-    dbgLog("get: path=" + _path);
+    console.error("enter cget");
+    console.error("get: path=" + _path);
     if (connection == null || connection.readyState != WS_OPEN) {
       // TODO: エラーを返す
       var err = createErrObj(-1, "connetion not exists","");  //TODO: 正しいエラーコードは？
@@ -306,17 +306,17 @@ var VISClient = (function() {
     var json_str = JSON.stringify(req);
     connection.send(json_str);
 
-    dbgLog("--: ==> " + json_str);
+    console.error("--: ==> " + json_str);
   };
   p.pget = function(_path) {
-    dbgLog("enter pget");
+    console.error("enter pget");
     return new Promise(function(_res, _rej) {
       p.cget(_path, _res, _rej);
     });
   };
 
   p.subscribe = function(_path, _sucCb, _errCb, _filter) {
-    dbgLog("subscribe: path=" + _path);
+    console.error("subscribe: path=" + _path);
     if (connection == null || connection.readyState != WS_OPEN) {
       // TODO: エラーを返す
       var err = createErrObj(-1, "connetion not exists","");  //TODO: 正しいエラーコードは？
@@ -342,7 +342,7 @@ var VISClient = (function() {
 
     var json_str = JSON.stringify(req);
     connection.send(json_str);
-    dbgLog("--: ==> " + json_str);
+    console.error("--: ==> " + json_str);
 
     // 同期的に仮のsubIdを返す
     return cliSubId;
@@ -357,15 +357,15 @@ var VISClient = (function() {
   };
 
   p.unsubscribe = function(_cliSubId, _sucCb, _errCb) {
-    dbgLog("enter unsubscribe");
+    console.error("enter unsubscribe");
     if (_sucCb == undefined)
       return p.punsubscribe(_cliSubId);
     else
       return p.cunsubscribe(_cliSubId, _sucCb, _errCb);
   };
   p.cunsubscribe = function(_cliSubId, _sucCb, _errCb) {
-    dbgLog("enter cunsubscribe");
-    dbgLog("unsubscribe: cliSubId=" + _cliSubId);
+    console.error("enter cunsubscribe");
+    console.error("unsubscribe: cliSubId=" + _cliSubId);
     if (connection == null || connection.readyState != WS_OPEN) {
       // TODO: エラーを返す
       var err = createErrObj(-1, "connetion not exists","");  //TODO: 正しいエラーコードは？
@@ -375,7 +375,7 @@ var VISClient = (function() {
 
     var reqId = issueNewReqId(); //reqIdはunsub用に新しいものを使用
     var svrSubId = g_reqDict.convertCliSubIdToSvrSubId(_cliSubId);
-    dbgLog("unsubscribe: svrSubId=" + svrSubId);
+    console.error("unsubscribe: svrSubId=" + svrSubId);
 
     // VISS に送付する、unsubscribeRequest json を作る
     var req = {"action": "unsubscribe", "requestId":reqId, "subscriptionId":svrSubId};
@@ -389,25 +389,25 @@ var VISClient = (function() {
     var json_str = JSON.stringify(req);
     connection.send(json_str);
 
-    dbgLog("--: ==> " + json_str);
+    console.error("--: ==> " + json_str);
 
   };
   p.punsubscribe = function(_cliSubId) {
-    dbgLog("enter punsubscribe");
+    console.error("enter punsubscribe");
     return new Promise(function(_res, _rej) {
       p.cunsubscribe(_cliSubId, _res, _rej);
     });
   };
 
   p.unsubscribeAll = function(_sucCb, _errCb) {
-    dbgLog("enter unsubscribeAll");
+    console.error("enter unsubscribeAll");
     if (_sucCb == undefined)
       return p.punsubscribeAll();
     else
       return p.cunsubscribeAll(_sucCb, _errCb);
   };
   p.cunsubscribeAll = function(_sucCb, _errCb) {
-    dbgLog("enter cunsubscribeAll");
+    console.error("enter cunsubscribeAll");
     if (connection == null || connection.readyState != WS_OPEN) {
       // TODO: 正しいエラーを返す
       var err = createErrObj(-1, "connetion not exists","");  //TODO: 正しいエラーコードは？
@@ -425,25 +425,25 @@ var VISClient = (function() {
     var json_str = JSON.stringify(req);
     connection.send(json_str);
 
-    dbgLog("--: ==> " + json_str);
+    console.error("--: ==> " + json_str);
   };
   p.punsubscribeAll = function() {
-    dbgLog("enter punsubscribeAll");
+    console.error("enter punsubscribeAll");
     return new Promise(function(_res, _rej) {
       p.cunsubscribeAll(_res, _rej);
     });
   };
 
   p.authorize = function(_tokens, _sucCb, _errCb) {
-    dbgLog("enter authorize");
+    console.error("enter authorize");
     if (_sucCb == undefined)
       return p.pauthorize(_tokens);
     else
       return p.cauthorize(_tokens, _sucCb, _errCb);
   };
   p.cauthorize = function(_tokens, _sucCb, _errCb) {
-    dbgLog("enter cauthorize");
-    dbgLog("authorize: token=" + _tokens);
+    console.error("enter cauthorize");
+    console.error("authorize: token=" + _tokens);
     if (connection == null || connection.readyState != WS_OPEN) {
       var err = createErrObj(-1, "connetion not ready","");
       setTimeout(function(){_errCb(err);},1);
@@ -457,25 +457,25 @@ var VISClient = (function() {
     // ws で送付
     var json_str = JSON.stringify(req);
     connection.send(json_str);
-    dbgLog("--: ==> " + json_str);
+    console.error("--: ==> " + json_str);
   };
   p.pauthorize = function(_tokens) {
-    dbgLog("enter pauthorize");
+    console.error("enter pauthorize");
     return new Promise(function(_res, _rej) {
       p.cauthorize(_tokens, _res, _rej);
     });
   };
 
   p.getVss = function(_path, _sucCb, _errCb) {
-    dbgLog("enter getVss");
+    console.error("enter getVss");
     if (_sucCb == undefined)
       return p.pgetVss(_path);
     else
       return p.cgetVss(_path, _sucCb, _errCb);
   };
   p.cgetVss = function(_path, _sucCb, _errCb) {
-    dbgLog("enter cgetVss");
-    dbgLog("getVSS: path=" + _path);
+    console.error("enter cgetVss");
+    console.error("getVSS: path=" + _path);
     if (connection == null || connection.readyState != WS_OPEN) {
       var err = createErrObj(-1, "connetion not ready","");
       setTimeout(function(){_errCb(err);},1);
@@ -489,26 +489,26 @@ var VISClient = (function() {
     // ws で送付
     var json_str = JSON.stringify(req);
     connection.send(json_str);
-    dbgLog("--: ==> " + json_str);
+    console.error("--: ==> " + json_str);
 
   };
   p.pgetVss = function(_path) {
-    dbgLog("enter pgetVss");
+    console.error("enter pgetVss");
     return new Promise(function(_res, _rej) {
       p.cgetVss(_path, _res, _rej);
     });
   };
 
   p.set = function(_path, _val, _sucCb, _errCb) {
-    dbgLog("enter set");
+    console.error("enter set");
     if (_sucCb == undefined)
       return p.pset(_path, _val);
     else
       return p.cset(_path, _val, _sucCb, _errCb);
   };
   p.cset = function(_path, _val, _sucCb, _errCb) {
-    dbgLog("enter cset");
-    dbgLog("set: path=" + _path + ", value=" + _val);
+    console.error("enter cset");
+    console.error("set: path=" + _path + ", value=" + _val);
     if (connection == null || connection.readyState != WS_OPEN) {
       var err = createErrObj(-1, "connetion not ready","");
       setTimeout(function(){_errCb(err);},1);
@@ -522,10 +522,10 @@ var VISClient = (function() {
     // ws で送付
     var json_str = JSON.stringify(req);
     connection.send(json_str);
-    dbgLog("--: ==> " + json_str);
+    console.error("--: ==> " + json_str);
   };
   p.pset = function(_path, _val) {
-    dbgLog("enter pset");
+    console.error("enter pset");
     return new Promise(function(_res, _rej) {
       p.cset(_path, _val, _res, _rej);
     });
@@ -540,13 +540,13 @@ var VISClient = (function() {
   //function onWsOpen(_sucCb) {
   //urata: for hackathon
   function onWsOpen(_event, _roomId,  _sucCb) {
-    dbgLog("onOpen");
+    console.error("onOpen");
 
     //urata: ここでroomIDをVISSに通知する、でよい？
     //  joinRoom というactionをh2018向けに追加してみる
     var objRoomId = {'action': 'joinRoom', 'roomId': _roomId};
     var msg = JSON.stringify(objRoomId);
-    dbgLog("onOpen: objRoomId = " + msg);
+    console.error("onOpen: objRoomId = " + msg);
     connection.send(msg);
 
     _sucCb('websocket connected');
@@ -555,7 +555,7 @@ var VISClient = (function() {
   //urata: orig
   /*
   function onWsOpen(_event, _sucCb) {
-    dbgLog("onOpen");
+    console.error("onOpen");
     _sucCb('websocket connected');
   }
   */
@@ -578,7 +578,7 @@ var VISClient = (function() {
     //    その後の一般的な接続エラーの通知手段としても使用される、という決まりにする。
 
     //_event = WebSocket's CloseEvent object で、ちゃんとした理由が返ってくる
-    dbgLog("onClose");
+    console.error("onClose");
 
     var intentional = _event.wasClean;
     var code = _event.code;
@@ -613,12 +613,12 @@ var VISClient = (function() {
     connection = null;
   }
   function onWsMessage(_event) {
-    dbgLog("onMessage");
+    console.error("onMessage");
     handleWsMessage(_event);
   }
   function onWsError(_event, _errCb) {
     //TODO: how to get error detail?
-    dbgLog("onError");
+    console.error("onError");
     _errCb('error occurred.');
   }
 
@@ -628,12 +628,12 @@ var VISClient = (function() {
   // Main process to handle message from WebSocket
   //TODO: remove this?
   function handleWsMessage(_event) {
-    dbgLog("handleWsMessage: event.data="+_event.data);
+    console.error("handleWsMessage: event.data="+_event.data);
     var msg;
     try {
       msg = JSON.parse(_event.data);
     } catch(e) {
-      dbgLog("Irregular Json received. Ignore.");
+      console.error("Irregular Json received. Ignore.");
       return;
     }
 
@@ -658,12 +658,12 @@ var VISClient = (function() {
     // case of 'get'
     if (action === "get") {
       if (isGetSuccessResponse(msg)) {
-        dbgLog("Get: response success");
+        console.error("Get: response success");
         // get のsuccess では value のみ返す
         sucCb(msg.value);
 
       } else if (isGetErrorResponse(msg)) {
-        dbgLog("Get: response fail");
+        console.error("Get: response fail");
         errCb(msg.error);
       }
       // delete request from requestHash. delete even in error case
@@ -673,12 +673,12 @@ var VISClient = (function() {
     } else if (action === "set") {
       //TODO:
       if (isSetSuccessResponse(msg)) {
-        dbgLog("Set: response success");
+        console.error("Set: response success");
         // get のsuccess では value のみ返す
         sucCb();
 
       } else if (isSetErrorResponse(msg)) {
-        dbgLog("Set: response fail");
+        console.error("Set: response fail");
         errCb(msg.error);
       }
       // delete request from requestHash. delete even in error case
@@ -691,7 +691,7 @@ var VISClient = (function() {
         g_reqDict.addSvrSubId(msg.requestId, msg.subscriptionId);
 
       } else if (isSubscribeErrorResponse(msg)) {
-        dbgLog("--: <== 'subscribe' request was rejected");
+        console.error("--: <== 'subscribe' request was rejected");
         errCb(msg.error.number);
         g_reqDict.deleteRequest(msg.requestId);
 
@@ -700,13 +700,13 @@ var VISClient = (function() {
         // case of subscribeNotification
 
         // callbackで通知
-        dbgLog("Subscribe: notification success: val= " + msg.value);
+        console.error("Subscribe: notification success: val= " + msg.value);
         sucCb(msg.value);
 
       } else if (isSubscriptionNotificationError(msg)) {
         // noting to do special here. continue subscribe.
         // callbackで通知
-        dbgLog("Subscribe: notification fail" + msg.error.number);
+        console.error("Subscribe: notification fail" + msg.error.number);
         errCb(msg.error);
 
       }
@@ -716,7 +716,7 @@ var VISClient = (function() {
       //       VISS は未対応なので、まだ使わない。
 
     } else if (action === "unsubscribe") {
-      dbgLog("WsMsg:unSubscribe: received");
+      console.error("WsMsg:unSubscribe: received");
 
       // TODO:
       // unsubscribe responseをVISSから受け取った場合
@@ -724,7 +724,7 @@ var VISClient = (function() {
       // 失敗ケース
       //  unsub request を reqDict から削除　
       if (msg.error != undefined) {
-        dbgLog("WsMsg:unSubscribe: fail: err="+ msg.error.number);
+        console.error("WsMsg:unSubscribe: fail: err="+ msg.error.number);
         // unsubscribe failed
         // - delete unsubscribe request from requestTable
         g_reqDict.deleteRequest(reqId);
@@ -734,7 +734,7 @@ var VISClient = (function() {
       //  sub request を reqDictから削除
       //  unsub request を reqDict から削除　
       } else {
-        dbgLog("WsMsg:unSubscribe: success: svrSubId="+ msg.subscriptionId);
+        console.error("WsMsg:unSubscribe: success: svrSubId="+ msg.subscriptionId);
         // unsubscribe success
         // - delete subscribe request from requestTable
         // - delete unsubscribe request from requestTable
@@ -745,11 +745,11 @@ var VISClient = (function() {
         sucCb();
       }
     } else if (action === "unsubscribeAll") {
-      dbgLog("WsMsg:unSubscribeAll: received");
+      console.error("WsMsg:unSubscribeAll: received");
       //TODO:
 
       if (msg.error != undefined) {
-        dbgLog("WsMsg:unSubscribeAll: fail: err="+ msg.error.number);
+        console.error("WsMsg:unSubscribeAll: fail: err="+ msg.error.number);
         // unsubscribe failed
         // - delete unsubscribe request from requestTable
         g_reqDict.deleteRequest(reqId);
@@ -757,7 +757,7 @@ var VISClient = (function() {
 
 
       } else {
-        dbgLog("WsMsg:unSubscribeAll: success: svrSubId="+ msg.subscriptionId);
+        console.error("WsMsg:unSubscribeAll: success: svrSubId="+ msg.subscriptionId);
 
         //var targ_svrSubId = msg.subscriptionId; //unsub対象のsubscribeのsubId
         //var targ_reqId = g_reqDict.convertSvrSubIdToReqId(targ_svrSubId); //subscribeのreqId
@@ -779,21 +779,21 @@ var VISClient = (function() {
 
     } else if (action === "authorize") {
       if (isAuthorizeSuccessResponse(msg)) {
-        dbgLog("authorize: response: success");
+        console.error("authorize: response: success");
         sucCb(msg.TTL);
       } else if (isAuthorizeErrorResponse(msg)) {
-        dbgLog("authorize: response: failure");
+        console.error("authorize: response: failure");
         errCb(msg.error);
       }
       g_reqDict.deleteRequest(reqId);      // delete unsub's entry in reqTable
 
     } else if (action === "getVSS") {
       if (isVssSuccessResponse(msg)) {
-        dbgLog("getVSS: response: success");
+        console.error("getVSS: response: success");
         var vss = JSON.stringify(msg.vss);
         sucCb(vss);
       } else if (isVssErrorResponse(msg)) {
-        dbgLog("getVSS: response: success");
+        console.error("getVSS: response: success");
         errCb(msg.error);
       }
       g_reqDict.deleteRequest(reqId);      // delete unsub's entry in reqTable
@@ -954,7 +954,7 @@ var VISClient = (function() {
     err.timeStamp = getUnixEpochTimestamp();
     return err;
   }
-  function dbgLog(_msg) {
+  function console.error(_msg) {
     //console.log("[VIAS]:"+_msg);
   }
 

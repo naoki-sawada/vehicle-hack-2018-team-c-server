@@ -1,3 +1,7 @@
-const { doConnect, doDisconnect } = require('./src/vias');
+const ViasClass = require('./src/vias');
 
-doConnect();
+const vias = new ViasClass();
+vias.doConnect();
+vias.on('message', (data) => {
+  console.log(data);
+});

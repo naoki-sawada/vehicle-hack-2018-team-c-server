@@ -1,0 +1,11 @@
+{
+  "name": "team-c-server",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Naoki Sawada",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.2",
+    "ws": "^4.0.0"
+  }
+}
